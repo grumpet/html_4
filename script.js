@@ -1,15 +1,12 @@
 console.log("Admission Form");
 
-// Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Get references to all relevant elements
     const psyAndBagRadio = document.getElementById('psy_and_bag');
     const mecAndBagRadio = document.getElementById('mec_and_bag');
     const psyGradeInput = document.getElementById('psy_grade');
     const mecGradeInput = document.getElementById('mec_grade');
     const bagGradeInput = document.getElementById('bag_grade');
     
-    // Create message elements for validation 
     const errorMessageElement = document.createElement('div');
     errorMessageElement.id = 'validation-message';
     errorMessageElement.style.display = 'none';
@@ -17,85 +14,103 @@ document.addEventListener('DOMContentLoaded', function() {
     errorMessageElement.style.fontWeight = 'bold';
     errorMessageElement.className = 'green';
     
-    // Create success message element
-    const successMessageElement = document.createElement('div');
-    successMessageElement.id = 'success-message';
-    successMessageElement.className = 'green'; 
-    successMessageElement.style.display = 'none';
-    successMessageElement.style.marginTop = '10px';
-    successMessageElement.style.fontWeight = 'bold';
-    successMessageElement.style.padding = '10px';
+
     
-    // Insert the message elements after the form
     const form = document.querySelector('form');
     form.after(errorMessageElement);
-    form.after(successMessageElement);
     
-    // Initial state - disable fields based on default selection
+    // Initial setup for form fields based on radio selection
     updateFieldsVisibility();
     
-    // Add event listeners to radio buttons
+    // Add event listeners for radio buttons
     psyAndBagRadio.addEventListener('change', updateFieldsVisibility);
     mecAndBagRadio.addEventListener('change', updateFieldsVisibility);
     
-    // Function to update fields visibility based on selected option
     function updateFieldsVisibility() {
         if (psyAndBagRadio.checked) {
-            // Enable psychometric and bagrut, disable mechina
             psyGradeInput.disabled = false;
             psyGradeInput.required = true;
             bagGradeInput.disabled = false;
-            bagGradeInput.required = true;
+            bagGradeInput.required = false;
             mecGradeInput.disabled = true;
             mecGradeInput.required = false;
             mecGradeInput.value = '';
         } else if (mecAndBagRadio.checked) {
-            // Enable mechina and bagrut, disable psychometric
             psyGradeInput.disabled = true;
             psyGradeInput.required = false;
             psyGradeInput.value = '';
             bagGradeInput.disabled = false;
-            bagGradeInput.required = true;
+            bagGradeInput.required = false;
             mecGradeInput.disabled = false;
             mecGradeInput.required = true;
         }
     }
-
-    function validate(){
-        const age = document.getElementById('age');        
-        if (age.value > 30){
+    
+    // Validate form inputs
+    function validate() {
+        const age = document.getElementById('age').value; 
+        const bagGrade = document.getElementById('bag_grade').value;
+        
+        // Check if bagrut grade is empty
+        if (bagGrade === '' || bagGrade === null || bagGrade.trim() === '') {
+            errorMessageElement.textContent = "Please enter your Bagrut grade.";
+            errorMessageElement.style.display = 'block';
+            successMessageElement.style.display = 'none';
+            bagGradeInput.focus(); // Focus on the missing field
+            return false;
+        }
+        
+        // Check age
+        if (parseInt(age) > 30) {
             errorMessageElement.textContent = "You are eligible for admission to any faculty you choose.";
             errorMessageElement.style.display = 'block';
-
-            
+            successMessageElement.style.display = 'none';
             return false;
-        } 
+        }
+        
+        // Clear error message and show success message for valid form
+        errorMessageElement.style.display = 'none';
+        return true;
     }
     
-    // Handle form submission
+    // Form submission handler
     form.addEventListener('submit', function(event) {
-        event.preventDefault();
+        event.preventDefault(); // Prevent default form submission
         
-        // Validate the form first
+        // Execute validation
         if (!validate()) {
-            return; // Stop form processing if validation fails
+            return false; // Stop processing if validation fails
         }
         
-        // Get values
+        // Collect form data
         const age = document.getElementById('age').value;
-        const admissionPath = document.querySelector('input[name="admission_path"]:checked').value;
-        let psyGrade = '';
-        let mecGrade = '';
+        const admissionPath = document.querySelector('input[name="admission_path"]:checked')?.value;
         const bagGrade = bagGradeInput.value;
         
-        if (admissionPath === 'psy_and_bag') {
-            psyGrade = psyGradeInput.value;
-            successMessageElement.textContent = `Success! Age: ${age}, Psychometric: ${psyGrade}, Bagrut: ${bagGrade}`;
-            console.log(`Admission Path: ${admissionPath}, Age: ${age}, Psychometric: ${psyGrade}, Bagrut: ${bagGrade}`);
-        } else if (admissionPath === 'mec_and_bag') {
-            mecGrade = mecGradeInput.value;
-            successMessageElement.textContent = `Success! Age: ${age}, Mechina: ${mecGrade}, Bagrut: ${bagGrade}`;
-            console.log(`Admission Path: ${admissionPath}, Age: ${age}, Mechina: ${mecGrade}, Bagrut: ${bagGrade}`);
+        // Ensure admission path is selected
+        if (!admissionPath) {
+            errorMessageElement.textContent = "Please select an admission path.";
+            errorMessageElement.style.display = 'block';
+            return false;
         }
+        
+        // Process based on the selected path
+        if (admissionPath === 'psy_and_bag') {
+            const psyGrade = psyGradeInput.value;
+            if (!psyGrade) {
+                errorMessageElement.textContent = "Please enter your Psychometric grade.";
+                errorMessageElement.style.display = 'block';
+                return false;
+            }
+        } else if (admissionPath === 'mec_and_bag') {
+            const mecGrade = mecGradeInput.value;
+            if (!mecGrade) {
+                errorMessageElement.textContent = "Please enter your Mechina grade.";
+                errorMessageElement.style.display = 'block';
+                return false;
+            }
+        }
+        
+        return true;
     });
 });
