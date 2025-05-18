@@ -14,18 +14,20 @@
     <input type="text" id="age" placeholder="age" required>
     <div>
         <h3>select from the below options</h3>
-        <input type = "radio" id = "psy_and_bag" value="psy_and_bag">
-        <label for="psy_and_bag">psychometric and bagrut</label>
-        <input type = "radio" id = "mec_and_bag" value="mec_and_bag">
-        <label for="mec_and_bag">Mechina and Bagrut</label>
+    <input type="radio" id="psy_and_bag" name="admission_path" value="psy_and_bag">
+    <label for="psy_and_bag">Psychometric and bagrut</label>
+    
+    <input type="radio" id="mec_and_bag" name="admission_path" value="mec_and_bag">
+    <label for="mec_and_bag">Mechina and Bagrut</label>
+    
     </div>
     <input type="text" id="psy_grade" placeholder="psychometric grade" required>
     <br>
-    <input type="text" id="bag_grade" placeholder="bagrut grade" required>
+    <input type="text" id="bag_grade" placeholder="bagrut grade" checked>
     <br>
-    <input type="text" id="mec_grade" placeholder="mechina grade" required>
-
-
+    <input type="text" id="mec_grade" placeholder="mechina grade" checked>
+    <br>
+    <button type="submit">validate</button>
     </form>
 
     </div>
